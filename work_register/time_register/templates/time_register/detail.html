@@ -1,3 +1,24 @@
-{% for work_entry in all_work_entries %}
+<h1>{{task.name}}</h1>
+
+<h2>Summary</h2>
+<p2>Task timeframe: {{task.begin_date}} -- {{task.end_date}}</p2><br>
+<p2>Daily Goal: {{task.goal_daily_minutes}} minutes </p2><br>
+<p2>Days passed: {{task.days_passed}}/{{task.total_days}} </p2><br>
+
+<h2>Projection</h2>
+<p>You have completed {{task.time_worked}} of this task, on average, you should have completed
+    {{task.desired_completed_time}} by now.</p>
+
+{% if task.status == "On time" %}
+<p>You are on time, good job! </p>
+{% elif task.status == "On surplus" %}
+<p>You are {{task.display_differential_time}} on surplus, good job! </p>
+{% elif task.status == "On deficit" %}
+<p>You are {{task.display_differential_time}} on deficit, don't give up! </p>
+{% else %}
+{% endif %}
+
+<h2>List of work entries</h2>
+{% for work_entry in task.workentry_set.all %}
 <p>{{work_entry}}</p>
 {% endfor %}
