@@ -7,9 +7,9 @@ from . import views
 app_name = 'time_register'
 urlpatterns = [
     path('api/task', views.TaskViewSet.as_view(
-        {'get': 'list', 'post': 'create'}), name='index'),
+        {'get': 'list', 'post': 'create'}), name='api_task'),
     path('api/work_entry', views.WorkEntryViewSet.as_view(
-        {'get': 'list', 'post': 'create'}), name='work_entry'),
+        {'get': 'list', 'post': 'create'}), name='api_work_entry'),
     path('<int:pk>/', views.DetailView.as_view(), name='detail'),
     path('', views.IndexView.as_view(), name='index'),
 ]

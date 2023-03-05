@@ -4,8 +4,8 @@
         "pk": 1,
         "fields": {
             "name": "TCC",
-            "begin_date": "2023-02-27",
-            "end_date": "2023-06-03",
+            "begin": "2023-02-27",
+            "end": "2023-06-03",
             "goal_daily_minutes": 120
         }
     },

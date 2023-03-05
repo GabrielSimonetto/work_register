@@ -1,34 +1,40 @@
 import datetime
 
 from django.db import models
-
+from django.core.exceptions import ValidationError
 
 # TODO: Feature: different ways to insert goal
 #   goal_weekly, total_goal
 # TODO: Feature: session based goals
 #   and no_goal (currently implicit if goal is none)
 
+
 class Task(models.Model):
     name = models.CharField(max_length=200)
+    begin = models.DateField('begin date')
+    end = models.DateField('end date')
+    goal_daily_minutes = models.PositiveIntegerField()
+
     # pub_date = models.DateTimeField('pub date')
     # TODO: allow none (task without a goal, and with no need for begin and end dates)
     #       either they all are required, or none of them are?
     #       and then it makes it somewhat troublesome to display stuff? maybe
-    begin_date = models.DateField('begin date')
-    end_date = models.DateField('end date')
-    goal_daily_minutes = models.PositiveIntegerField()
 
     # TODO: don't allow more than 24h of a goal per day
 
     def __str__(self):
         return self.name
 
+    def clean(self):
+        if self.begin > self.end:
+            raise ValidationError('Begin date must be before end date.')
+
     def days_passed(self):
         # +1 in order to account for the current day
-        return (datetime.date.today() - self.begin_date).days + 1
+        return (datetime.date.today() - self.begin).days + 1
 
     def total_days(self):
-        return (self.end_date - self.begin_date).days
+        return (self.end - self.begin).days
 
     # TODO: check for property here
     #    idk how much it saves on processing but at least code gets prettier
@@ -89,6 +95,11 @@ class WorkEntry(models.Model):
             return output
 
         return f"""{self.begin.strftime(" %d/%m/%Y: %Hh%M")} - {self.end.strftime(" %Hh%M - - %d/%m/%Y")}"""
+
+    def clean(self):
+        if self.begin > self.end:
+            raise ValidationError(
+                'Begin datetime must be before end datetime.')
 
     def __iter__(self):
         return iter((self.begin, self.end))
