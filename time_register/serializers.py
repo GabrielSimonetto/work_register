@@ -19,16 +19,31 @@ class WorkEntrySerializer(serializers.ModelSerializer):
         exclude = []
 
     def validate(self, data):
-        if data["begin"] >= data["end"]:
+        begin = data["begin"]
+        end = data["end"]
+
+        # Check for begin precedence
+        if begin >= end:
             raise serializers.ValidationError(
                 "End datetime must be after begin datetime."
             )
 
-        if (data["task"].begin > data["begin"].date()) or (
-            data["task"].end < data["end"].date()
-        ):
+        task = data["task"]
+
+        # Check if work_entry timespan is inside it's task timespan
+        if (task.begin > begin.date()) or (task.end < end.date()):
             raise serializers.ValidationError(
                 "Work Entry must be contained inside it's related task timespan."
             )
+
+        # Check if work_entry violates the timespan of another work_entry
+        other_work_entries = WorkEntry.objects.filter(task=task)
+        for other in other_work_entries:
+            # candidate_begin must be after otherend or candidate_end before otherbegin
+            # applying De Morgan:
+            if (begin < other.end) and (end > other.begin):
+                raise serializers.ValidationError(
+                    f"Work Entry violates timespan of another Work Entry with id={other.id}."
+                )
 
         return data

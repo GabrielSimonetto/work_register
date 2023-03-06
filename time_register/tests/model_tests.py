@@ -246,3 +246,33 @@ def test_serializer_work_entry_outside_of_task_timespan_ValidationError(client):
             "Work Entry must be contained inside it's related task timespan."
         ]
     }
+
+
+@pytest.mark.django_db
+def test_serializer_work_entry_violates_another_work_entry_raises_ValidationError(
+    client, blanket_task
+):
+    data1 = {
+        "begin": timezone.make_aware(datetime(2023, 3, 5, 12, 0, 0)),
+        "end": timezone.make_aware(datetime(2023, 3, 5, 14, 0, 0)),
+        "task": blanket_task.id,
+    }
+    url = reverse("time_register:api:api_work_entry-list")
+    response = client.post(url, data1, format="json")
+
+    data2 = {
+        "begin": timezone.make_aware(datetime(2023, 3, 5, 13, 0, 0)),
+        "end": timezone.make_aware(datetime(2023, 3, 5, 15, 0, 0)),
+        "task": blanket_task.pk,
+    }
+    serializer = WorkEntrySerializer(data=data2)
+    assert not serializer.is_valid()
+
+    url = reverse("time_register:api:api_work_entry-list")
+    response = client.post(url, data2, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data == {
+        "non_field_errors": [
+            "Work Entry violates timespan of another Work Entry with id=1."
+        ]
+    }
