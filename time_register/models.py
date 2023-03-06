@@ -13,6 +13,7 @@ class Task(models.Model):
     def __str__(self):
         return self.name
 
+    # TODO: perguntar sobre a existencia isso
     def clean(self):
         if self.begin > self.end:
             raise ValidationError("Begin date must be before end date.")
@@ -21,11 +22,11 @@ class Task(models.Model):
         # +1 in order to account for the current day
         return (datetime.date.today() - self.begin).days + 1
 
+    @property
     def total_days(self):
         return (self.end - self.begin).days
 
-    # TODO: check for property here
-    #    idk how much it saves on processing but at least code gets prettier
+    # TODO: perguntar sobre uso de properties em coisas que precisam acessar o banco
     def status(self):
         if self.time_worked() == self.desired_completed_time():
             return "On time"
@@ -45,7 +46,7 @@ class Task(models.Model):
 
     def time_worked(self):
         return sum(
-            [work_entry.time_worked() for work_entry in self.workentry_set.all()],
+            [work_entry.time_worked for work_entry in self.workentry_set.all()],
             start=datetime.timedelta(),
         )
 
@@ -65,6 +66,7 @@ class WorkEntry(models.Model):
 
         return f"""{self.begin.strftime(" %d/%m/%Y: %Hh%M")} - {self.end.strftime(" %Hh%M - - %d/%m/%Y")}"""
 
+    # TODO: perguntar sobre a existencia isso
     def clean(self):
         if self.begin > self.end:
             raise ValidationError("End datetime must be after begin datetime.")
@@ -72,5 +74,6 @@ class WorkEntry(models.Model):
     def __iter__(self):
         return iter((self.begin, self.end))
 
+    @property
     def time_worked(self):
         return self.end - self.begin

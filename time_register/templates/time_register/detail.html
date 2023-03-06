@@ -22,6 +22,12 @@
 {% endif %}
 
 <h2>List of work entries</h2>
-{% for work_entry in task.workentry_set.all %}
-<p>{{work_entry}}</p>
-{% endfor %}
+{% if task.workentry_set.all %}
+<ul>
+    {% for work_entry in task.workentry_set.all %}
+    <p>{{work_entry}}</p>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No work entries yet, <a href="{% url 'time_register:api:api_work_entry-list' %}">register the first one!</a></p>
+{% endif %}
