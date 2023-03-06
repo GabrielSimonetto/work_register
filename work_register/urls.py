@@ -17,10 +17,9 @@ from django.contrib import admin
 from django.urls import include, path
 
 # # TODO maybe
-# from time_register.urls import time_register_urls
+from time_register.urls import api_urls
 
 urlpatterns = [
-    path('time_register/', include('time_register.urls')),
-    # path('time_register/', include(time_register_urls)),
-    path('admin/', admin.site.urls),
+    path("", include("time_register.urls")),
+    path("admin/", admin.site.urls),
 ]

@@ -1,28 +1,17 @@
-from django.urls import path
-
+from django.urls import path, include
 from . import views
 
-# TODO eu posso separar o API em router e o resto do site em nao-router
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r"tasks", views.TaskViewSet, basename="api_task")
+router.register(r"work_entries", views.WorkEntryViewSet, basename="api_work_entry")
 
 app_name = "time_register"
 urlpatterns = [
-    path(
-        "api/task",
-        views.TaskViewSet.as_view({"get": "list", "post": "create"}),
-        name="api_task",
-    ),
-    path(
-        "api/work_entry",
-        views.WorkEntryViewSet.as_view({"get": "list", "post": "create"}),
-        name="api_work_entry",
-    ),
+    path("api/", include((router.urls, "api"), namespace="api_root")),
     path("<int:pk>/", views.DetailView.as_view(), name="detail"),
     path("", views.IndexView.as_view(), name="index"),
 ]
 
-
-# urlpatterns = [
-#     path('', views.IndexView.as_view(), name='index'),
-#     path('<int:pk>/', views.DetailView.as_view(), name='detail'),
-#     # path('', views.IndexView.as_view(), name='index'),
-# ]
+api_urls = router.urls

@@ -1,3 +1,13 @@
+<h1>Welcome to time_register!</h1>
+<p>Here we have a list of all of your tasks, click one if you want to check your progress in it.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'time_register:api:api_task-list' %}">Create a new Task!</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url 'time_register:api:api_work_entry-list' %}">Enter a new Work Entry!</a>
+<h2>List of tasks</h2>
 {% if latest_task_list %}
 <ul>
     {% for task in latest_task_list %}
