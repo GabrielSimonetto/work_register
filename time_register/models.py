@@ -67,7 +67,7 @@ class WorkEntry(models.Model):
 
     def clean(self):
         if self.begin > self.end:
-            raise ValidationError("Begin datetime must be before end datetime.")
+            raise ValidationError("End datetime must be after begin datetime.")
 
     def __iter__(self):
         return iter((self.begin, self.end))

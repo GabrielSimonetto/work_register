@@ -8,9 +8,8 @@ class TaskSerializer(serializers.ModelSerializer):
         exclude = []
 
     def validate(self, data):
-        if data['begin'] > data['end']:
-            raise serializers.ValidationError(
-                'Begin date must be before end date.')
+        if data["begin"] > data["end"]:
+            raise serializers.ValidationError("Begin date must be before end date.")
         return data
 
 
@@ -20,7 +19,16 @@ class WorkEntrySerializer(serializers.ModelSerializer):
         exclude = []
 
     def validate(self, data):
-        if data['begin'] > data['end']:
+        if data["begin"] >= data["end"]:
             raise serializers.ValidationError(
-                'Begin datetime must be before end datetime.')
+                "End datetime must be after begin datetime."
+            )
+
+        if (data["task"].begin > data["begin"].date()) or (
+            data["task"].end < data["end"].date()
+        ):
+            raise serializers.ValidationError(
+                "Work Entry must be contained inside it's related task timespan."
+            )
+
         return data

@@ -32,6 +32,20 @@ def test_create_task(client):
 
 
 @pytest.mark.django_db
+def test_allow_same_day_task(client):
+    url = reverse("time_register:api:api_task-list")
+    data = {
+        "name": "Test Task",
+        "begin": "2023-03-10",
+        "end": "2023-03-10",
+        "goal_daily_minutes": 60,
+    }
+
+    response = client.post(url, data, format="json")
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.django_db
 def test_create_work_entry(client, blanket_task):
     data = {
         "begin": timezone.make_aware(datetime(2023, 3, 5, 12, 0, 0)),
@@ -113,7 +127,7 @@ def acceptance_test_serializer_work_entry(client, blanket_task):
     response = client.post(url, data, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.data == {
-        "non_field_errors": ["Begin datetime must be before end datetime."]
+        "non_field_errors": ["End datetime must be after begin datetime."]
     }
 
 
@@ -183,5 +197,52 @@ def test_serializer_work_entry_bigger_begin_than_end_raises_ValidationError(
     response = client.post(url, data, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.data == {
-        "non_field_errors": ["Begin datetime must be before end datetime."]
+        "non_field_errors": ["End datetime must be after begin datetime."]
+    }
+
+
+@pytest.mark.django_db
+def test_serializer_work_entry_outside_of_task_timespan_ValidationError(client):
+    """
+    Builder should stop workentry creation if not inside it's task timespan
+    """
+    task = Task.objects.create(
+        name="Task 1",
+        begin="2023-03-09",
+        end="2023-03-10",
+        goal_daily_minutes=30,
+    )
+
+    data1 = {
+        "begin": datetime(2023, 3, 8, 23, 0, 0),
+        "end": datetime(2023, 3, 9, 10, 0, 0),
+        "task": task.pk,
+    }
+    serializer = WorkEntrySerializer(data=data1)
+    assert not serializer.is_valid()
+
+    url = reverse("time_register:api:api_work_entry-list")
+    response = client.post(url, data1, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data == {
+        "non_field_errors": [
+            "Work Entry must be contained inside it's related task timespan."
+        ]
+    }
+
+    data2 = {
+        "begin": datetime(2023, 3, 9, 23, 0, 0),
+        "end": datetime(2023, 3, 11, 10, 0, 0),
+        "task": task.pk,
+    }
+    serializer = WorkEntrySerializer(data=data2)
+    assert not serializer.is_valid()
+
+    url = reverse("time_register:api:api_work_entry-list")
+    response = client.post(url, data2, format="json")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data == {
+        "non_field_errors": [
+            "Work Entry must be contained inside it's related task timespan."
+        ]
     }
