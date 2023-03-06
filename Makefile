@@ -14,7 +14,7 @@ docker_run:
 	docker run -d -p 8080:8080 work_register
 
 test:
-	poetry run python manage.py test time_register
+	poetry run pytest -s
 
 shell:
 	poetry run python manage.py shell
