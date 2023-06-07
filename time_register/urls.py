@@ -10,7 +10,7 @@ router.register(r"work_entries", views.WorkEntryViewSet, basename="api_work_entr
 app_name = "time_register"
 urlpatterns = [
     path("api/", include((router.urls, "api"), namespace="api_root")),
-    path("<int:pk>/", views.DetailView.as_view(), name="detail"),
+    path("tasks/<int:pk>/", views.DetailView.as_view(), name="detail"),
     path("", views.IndexView.as_view(), name="index"),
 ]
 
