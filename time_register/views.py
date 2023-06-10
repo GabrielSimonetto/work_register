@@ -4,6 +4,12 @@ from rest_framework import viewsets
 from .models import Task, WorkEntry
 from .serializers import TaskSerializer, WorkEntrySerializer
 
+from django.shortcuts import render
+
+
+def index_react(request):
+    return render(request, "index.html")
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
