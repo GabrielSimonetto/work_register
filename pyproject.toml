@@ -10,6 +10,7 @@ packages = [{include = "work_register"}]
 python = "^3.10"
 django = "^4.1.7"
 djangorestframework = "^3.14.0"
+django-simple-history = "^3.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"

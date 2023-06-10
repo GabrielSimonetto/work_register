@@ -3,12 +3,15 @@ import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from simple_history.models import HistoricalRecords
+
 
 class Task(models.Model):
     name = models.CharField(max_length=200)
     begin = models.DateField("begin date")
     end = models.DateField("end date")
     goal_daily_minutes = models.PositiveIntegerField()
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -58,6 +61,7 @@ class WorkEntry(models.Model):
     begin = models.DateTimeField("begin work")
     end = models.DateTimeField("end work")
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    history = HistoricalRecords()
 
     def __str__(self):
         if self.begin.date() == self.end.date():
