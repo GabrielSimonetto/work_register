@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/", include((router.urls, "api"), namespace="api_root")),
     path("tasks/<int:pk>/", views.DetailView.as_view(), name="detail"),
     path("", views.IndexView.as_view(), name="index"),
+    path("react", views.index_react, name="index_react"),
 ]
 
 api_urls = router.urls
