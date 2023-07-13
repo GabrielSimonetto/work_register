@@ -1,5 +1,14 @@
-from .models import Task, WorkEntry
+from .models import Task, WorkEntry, GenericTest
 from rest_framework import serializers
+
+
+class GenericTestSerializer(serializers.ModelSerializer):
+    resource = serializers.CharField(read_only=True)
+    data = serializers.JSONField(read_only=True)
+
+    class Meta:
+        model = GenericTest
+        fields = "__all__"
 
 
 class TaskSerializer(serializers.ModelSerializer):
