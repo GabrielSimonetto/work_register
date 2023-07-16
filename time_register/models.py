@@ -4,6 +4,11 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
+class GenericTest(models.Model):
+    data = models.JSONField()
+    resource = models.TextField()
+
+
 class Task(models.Model):
     name = models.CharField(max_length=200)
     begin = models.DateField("begin date")
